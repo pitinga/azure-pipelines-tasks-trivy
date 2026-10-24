@@ -1,0 +1,197 @@
+{
+  "author": "Abner Pitinga",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "minimumAgentVersion": "4.248.0",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "execution": {
+    "Node20_1": {
+      "target": "index.js"
+    },
+    "Node24": {
+      "target": "index.js"
+    }
+  },
+  "id": "47617709-56db-4570-a004-a83cfa29e3e3",
+  "name": "TrivyScan",
+  "friendlyName": "Trivy Scan",
+  "description": "Executa scanners Trivy para imagens, sistema de arquivos, repositórios, IaC, rootfs, SBOM e Kubernetes.",
+  "instanceNameFormat": "Trivy $(command) $(target)",
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Opções avançadas",
+      "isExpanded": false
+    }
+  ],
+  "inputs": [
+    {
+      "name": "command",
+      "type": "pickList",
+      "label": "Tipo de scan",
+      "required": true,
+      "helpMarkDown": "`image` imagem de contêiner; `fs` diretório; `repo` repositório Git; `config` IaC; `rootfs` filesystem raiz; `sbom` arquivo SBOM; `k8s` cluster/contexto.",
+      "defaultValue": "image",
+      "options": {
+        "image": "Imagem de contêiner",
+        "fs": "Diretório / arquivo",
+        "repo": "Repositório Git",
+        "config": "Infraestrutura como código",
+        "rootfs": "Root filesystem",
+        "sbom": "SBOM",
+        "k8s": "Kubernetes"
+      }
+    },
+    {
+      "name": "target",
+      "type": "string",
+      "label": "Alvo do scan",
+      "required": true,
+      "helpMarkDown": "Exemplo de imagem: `meuacr.azurecr.io/app:$(Build.BuildId)`; pasta: `$(Build.SourcesDirectory)`; repositório: URL Git. Para `k8s`, informe `cluster` ou um contexto de kubeconfig.",
+      "defaultValue": ""
+    },
+    {
+      "name": "workingDirectory",
+      "type": "filePath",
+      "label": "Diretório de trabalho",
+      "required": false,
+      "helpMarkDown": "Diretório existente a partir do qual caminhos relativos serão resolvidos.",
+      "defaultValue": "$(System.DefaultWorkingDirectory)"
+    },
+    {
+      "name": "scanners",
+      "type": "string",
+      "label": "Scanners",
+      "required": false,
+      "helpMarkDown": "Lista separada por vírgula, conforme os scanners aceitos pelo subcomando (ex.: `vuln,secret`, `misconfig`, `license`). Vazio usa o padrão do Trivy.",
+      "defaultValue": ""
+    },
+    {
+      "name": "severity",
+      "type": "string",
+      "label": "Severidades",
+      "required": false,
+      "helpMarkDown": "Ex.: `HIGH,CRITICAL` ou `LOW,MEDIUM,HIGH,CRITICAL,UNKNOWN`. Vazio usa padrão do Trivy.",
+      "defaultValue": "HIGH,CRITICAL"
+    },
+    {
+      "name": "format",
+      "type": "pickList",
+      "label": "Formato do relatório",
+      "required": true,
+      "helpMarkDown": "`table` no console, `json`, `sarif`, `cyclonedx`, `spdx-json` ou `template` (este requer template via argumentos extras).",
+      "defaultValue": "table",
+      "options": {
+        "table": "table",
+        "json": "json",
+        "sarif": "sarif",
+        "cyclonedx": "cyclonedx",
+        "spdx-json": "spdx-json",
+        "template": "template"
+      }
+    },
+    {
+      "name": "output",
+      "type": "string",
+      "label": "Arquivo de saída",
+      "required": false,
+      "helpMarkDown": "Ex.: `$(Build.ArtifactStagingDirectory)/trivy.json`. Vazio imprime no console. Diretórios de saída são criados automaticamente.",
+      "defaultValue": ""
+    },
+    {
+      "name": "exitCode",
+      "type": "string",
+      "label": "Código de saída quando vulnerabilidades são encontradas",
+      "required": true,
+      "helpMarkDown": "`0` apenas relata; `1` faz a task falhar quando o Trivy encontra achados conforme os critérios. Também aceita 2–125.",
+      "defaultValue": "0"
+    },
+    {
+      "name": "ignoreUnfixed",
+      "type": "boolean",
+      "label": "Ignorar vulnerabilidades sem correção disponível",
+      "required": false,
+      "helpMarkDown": "Equivale a `--ignore-unfixed`.",
+      "defaultValue": "false"
+    },
+    {
+      "name": "cacheDir",
+      "type": "string",
+      "label": "Pasta de cache do banco Trivy",
+      "required": false,
+      "helpMarkDown": "Para reaproveitar banco de vulnerabilidades em agentes self-hosted.",
+      "defaultValue": "",
+      "groupName": "advanced"
+    },
+    {
+      "name": "ignoreFile",
+      "type": "string",
+      "label": "Arquivo de exceções",
+      "required": false,
+      "helpMarkDown": "Caminho para `.trivyignore` ou arquivo de regras de exclusão.",
+      "defaultValue": "",
+      "groupName": "advanced"
+    },
+    {
+      "name": "timeout",
+      "type": "string",
+      "label": "Timeout",
+      "required": false,
+      "helpMarkDown": "Duração aceita pelo Trivy, ex.: `10m`, `30m`, `1h`.",
+      "defaultValue": "",
+      "groupName": "advanced"
+    },
+    {
+      "name": "dbRepository",
+      "type": "string",
+      "label": "Repositório do banco de vulnerabilidades",
+      "required": false,
+      "helpMarkDown": "Ex.: `mirror.gcr.io/aquasec/trivy-db:2`. Vazio usa padrão.",
+      "defaultValue": "",
+      "groupName": "advanced"
+    },
+    {
+      "name": "skipDbUpdate",
+      "type": "boolean",
+      "label": "Não atualizar banco de vulnerabilidades",
+      "required": false,
+      "helpMarkDown": "Somente habilite se o banco já estiver presente no cache.",
+      "defaultValue": "false",
+      "groupName": "advanced"
+    },
+    {
+      "name": "offlineScan",
+      "type": "boolean",
+      "label": "Scan offline",
+      "required": false,
+      "helpMarkDown": "Limita buscas que precisam de acesso externo; requer cache/bancos preparados.",
+      "defaultValue": "false",
+      "groupName": "advanced"
+    },
+    {
+      "name": "insecure",
+      "type": "boolean",
+      "label": "Permitir TLS não confiável nos alvos",
+      "required": false,
+      "helpMarkDown": "Não recomendado; use apenas em ambientes controlados.",
+      "defaultValue": "false",
+      "groupName": "advanced"
+    },
+    {
+      "name": "additionalArguments",
+      "type": "string",
+      "label": "Argumentos adicionais",
+      "required": false,
+      "helpMarkDown": "Ex.: `--image-src docker` ou `--config \"$(trivySecureFile.secureFilePath)\"`. Aspas duplas/simples preservam espaços. Não coloque senhas aqui; use variáveis de ambiente secretas como `TRIVY_PASSWORD`.",
+      "defaultValue": "",
+      "groupName": "advanced"
+    }
+  ]
+}

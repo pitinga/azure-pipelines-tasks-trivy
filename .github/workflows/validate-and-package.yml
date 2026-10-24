@@ -1,0 +1,24 @@
+name: Validate and package VSIX
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate tasks
+        run: npm run check
+      - name: Install packaging CLI
+        run: npm install --no-save tfx-cli@0.24.2
+      - name: Create VSIX
+        run: mkdir -p dist && npm run package:vsix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trivy-azure-devops-vsix
+          path: dist/*.vsix
+          if-no-files-found: error

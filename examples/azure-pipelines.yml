@@ -1,0 +1,37 @@
+# Exemplo: scan de uma imagem hospedada no Azure Container Registry.
+# Instale a extensão Trivy Installer & Scanner na organização Azure DevOps.
+# Defina containerRegistryServiceConnection e acrLoginServer conforme seu ambiente.
+trigger:
+- main
+pool:
+  vmImage: ubuntu-latest
+variables:
+  acrLoginServer: 'meuacr.azurecr.io'
+  imageName: 'minha-aplicacao'
+steps:
+- task: Docker@2
+  displayName: Autenticar no ACR
+  inputs:
+    command: login
+    containerRegistry: 'MinhaConexaoACR'
+- task: TrivyInstaller@0
+  displayName: Instalar Trivy atualizado
+  inputs:
+    version: latest
+- task: TrivyScan@0
+  displayName: Analisar imagem ACR
+  inputs:
+    command: image
+    target: '$(acrLoginServer)/$(imageName):$(Build.BuildId)'
+    scanners: 'vuln,secret'
+    severity: 'HIGH,CRITICAL'
+    format: json
+    output: '$(Build.ArtifactStagingDirectory)/trivy.json'
+    exitCode: '1'
+    cacheDir: '$(Pipeline.Workspace)/.trivy-cache'
+- task: PublishPipelineArtifact@1
+  displayName: Publicar relatório
+  condition: always()
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: trivy-report

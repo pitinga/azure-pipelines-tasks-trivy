@@ -1,0 +1,16 @@
+{
+  "name": "azure-pipelines-tasks-trivy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Azure DevOps tasks to install and scan with Aqua Trivy",
+  "license": "MIT",
+  "scripts": {
+    "test": "node tools/prepare.js && node --test tests/*.test.js",
+    "check": "node tools/prepare.js && node --check lib/ado.js && node --check lib/cli.js && node --check lib/installer.js && node --check TrivyInstaller/index.js && node --check TrivyScan/index.js && node --test tests/*.test.js",
+    "package:vsix": "node tools/prepare.js && tfx extension create --manifest-globs vss-extension.json --output-path dist"
+  },
+  "devDependencies": {
+    "tfx-cli": "0.24.2"
+  },
+  "engines": {"node": ">=20"}
+}

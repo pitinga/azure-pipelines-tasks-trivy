@@ -1,0 +1,37 @@
+{
+  "author": "Abner Pitinga",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "minimumAgentVersion": "4.248.0",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "execution": {
+    "Node20_1": {
+      "target": "index.js"
+    },
+    "Node24": {
+      "target": "index.js"
+    }
+  },
+  "id": "efb9cb60-50ec-43ac-af78-f1eecf5f9eaf",
+  "name": "TrivyInstaller",
+  "friendlyName": "Trivy Installer",
+  "description": "Instala a versão estável mais recente ou uma versão fixa do Trivy, com verificação SHA-256.",
+  "instanceNameFormat": "Instalar Trivy $(version)",
+  "inputs": [
+    {
+      "name": "version",
+      "type": "string",
+      "label": "Versão do Trivy",
+      "required": true,
+      "helpMarkDown": "`latest` consulta a última release estável oficial do Trivy a cada execução; ou informe `0.76.1` para fixar versão. Usa cache do agente por versão/arquitetura.",
+      "defaultValue": "latest"
+    }
+  ]
+}

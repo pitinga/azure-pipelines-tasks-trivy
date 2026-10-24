@@ -1,0 +1,21 @@
+trigger: none
+pool:
+  vmImage: windows-latest
+steps:
+- task: TrivyInstaller@0
+  inputs:
+    version: latest
+- task: TrivyScan@0
+  inputs:
+    command: fs
+    target: '$(Build.SourcesDirectory)'
+    scanners: 'vuln,secret,misconfig'
+    severity: 'HIGH,CRITICAL'
+    format: sarif
+    output: '$(Build.ArtifactStagingDirectory)/trivy.sarif'
+    exitCode: '0'
+- task: PublishPipelineArtifact@1
+  condition: always()
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: security-report
