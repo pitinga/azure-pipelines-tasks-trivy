@@ -54,21 +54,6 @@
     },
     {
       "path": "TrivyScan"
-    },
-    {
-      "path": "images/extension-icon.png",
-      "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-      "addressable": true
-    },
-    {
-      "path": "overview.md",
-      "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-      "addressable": true
-    },
-    {
-      "path": "LICENSE",
-      "assetType": "Microsoft.VisualStudio.Services.Content.License",
-      "addressable": true
     }
   ],
   "contributions": [
