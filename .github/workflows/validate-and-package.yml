@@ -17,6 +17,8 @@ jobs:
         run: npm install --no-save tfx-cli@0.24.2
       - name: Create VSIX
         run: mkdir -p dist && npm run package:vsix
+      - name: Verify Marketplace assets in VSIX
+        run: npm run verify:vsix
       - uses: actions/upload-artifact@v4
         with:
           name: trivy-azure-devops-vsix

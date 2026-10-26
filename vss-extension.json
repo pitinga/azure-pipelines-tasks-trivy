@@ -2,29 +2,99 @@
   "manifestVersion": 1,
   "id": "azure-pipelines-tasks-trivy",
   "name": "Trivy Installer & Scanner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "pitinga",
   "description": "Install Trivy and scan container images, filesystems, repositories, IaC and Kubernetes in Azure Pipelines.",
   "public": false,
-  "targets": [{ "id": "Microsoft.VisualStudio.Services" }],
-  "categories": ["Azure Pipelines"],
-  "icons": { "default": "images/extension-icon.png" },
-  "content": { "details": { "path": "overview.md" }, "license": { "path": "LICENSE" } },
-  "repository": { "type": "git", "uri": "https://github.com/pitinga/azure-pipelines-tasks-trivy" },
-  "links": {
-    "support": { "uri": "https://github.com/pitinga/azure-pipelines-tasks-trivy/issues" },
-    "repository": { "uri": "https://github.com/pitinga/azure-pipelines-tasks-trivy" }
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "categories": [
+    "Azure Pipelines"
+  ],
+  "icons": {
+    "default": "images/extension-icon.png"
   },
-  "tags": ["Trivy", "Security", "DevSecOps", "Container", "Vulnerability", "Azure Pipelines"],
+  "content": {
+    "details": {
+      "path": "overview.md"
+    },
+    "license": {
+      "path": "LICENSE"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/pitinga/azure-pipelines-tasks-trivy"
+  },
+  "links": {
+    "support": {
+      "uri": "https://github.com/pitinga/azure-pipelines-tasks-trivy/issues"
+    },
+    "repository": {
+      "uri": "https://github.com/pitinga/azure-pipelines-tasks-trivy"
+    },
+    "getstarted": {
+      "uri": "https://github.com/pitinga/azure-pipelines-tasks-trivy#exemplo-rápido--imagem-no-acr"
+    }
+  },
+  "tags": [
+    "Trivy",
+    "Security",
+    "DevSecOps",
+    "Container",
+    "Vulnerability",
+    "Azure Pipelines"
+  ],
   "files": [
-    { "path": "TrivyInstaller" },
-    { "path": "TrivyScan" },
-    { "path": "images/extension-icon.png" },
-    { "path": "overview.md" },
-    { "path": "LICENSE" }
+    {
+      "path": "TrivyInstaller"
+    },
+    {
+      "path": "TrivyScan"
+    },
+    {
+      "path": "images/extension-icon.png",
+      "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+      "addressable": true
+    },
+    {
+      "path": "overview.md",
+      "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+      "addressable": true
+    },
+    {
+      "path": "LICENSE",
+      "assetType": "Microsoft.VisualStudio.Services.Content.License",
+      "addressable": true
+    }
   ],
   "contributions": [
-    { "id": "trivy-installer", "type": "ms.vss-distributed-task.task", "targets": ["ms.vss-distributed-task.tasks"], "properties": { "name": "TrivyInstaller" } },
-    { "id": "trivy-scan", "type": "ms.vss-distributed-task.task", "targets": ["ms.vss-distributed-task.tasks"], "properties": { "name": "TrivyScan" } }
-  ]
+    {
+      "id": "trivy-installer",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "TrivyInstaller"
+      }
+    },
+    {
+      "id": "trivy-scan",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "TrivyScan"
+      }
+    }
+  ],
+  "branding": {
+    "color": "#092D36",
+    "theme": "dark"
+  }
 }
