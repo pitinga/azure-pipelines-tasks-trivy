@@ -118,7 +118,7 @@ steps:
 
 ## 6. Requisitos
 
-- Azure Pipelines agent >= 4.248.0 (executor Node 20; Node 24 quando disponível).
+- Azure Pipelines agent >= 4.265.1 (executor exclusivo Node 24).
 - Acesso à Internet para releases e banco Trivy, salvo configurações offline adequadas.
 - Credenciais do ACR/Kubernetes e permissões de leitura dos alvos quando necessário.
 

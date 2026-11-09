@@ -5,7 +5,7 @@ Extensão independente para **Azure Pipelines**, inspirada no modelo de duas tas
 - **`TrivyInstaller@0`** — obtém a versão estável mais recente do Trivy (padrão `latest`) ou uma versão fixa, verifica SHA-256 e disponibiliza o executável no `PATH` do job;
 - **`TrivyScan@0`** — executa análises do Trivy por imagem, sistema de arquivos, repositório, IaC, rootfs, SBOM ou Kubernetes.
 
-A extensão usa executores **Node24** e **Node20_1** (agente >= 4.248.0) e não depende de pacotes npm em tempo de execução. Para produção, teste em um agente Azure DevOps antes de disponibilizar ao público.
+A extensão usa **exclusivamente o executor `Node24`**, requer **Azure Pipelines Agent >= 4.265.1** e não depende de pacotes npm em tempo de execução. Para produção, teste em um agente Azure DevOps antes de disponibilizar ao público.
 
 ## Exemplo rápido — imagem no ACR
 
@@ -152,7 +152,7 @@ vss-extension.json    # manifesto Marketplace
 1. Crie um repositório próprio, por exemplo `pitinga/azure-pipelines-tasks-trivy`, e suba os arquivos.
 2. Ajuste `publisher` em `vss-extension.json` para seu **publisher real do Visual Studio Marketplace**. O ID do publisher não é necessariamente seu login GitHub.
 3. A GitHub Action `Validate and package VSIX` roda testes e publica o artefato `trivy-azure-devops-vsix`. Basta abrir **Actions**, selecionar a execução e baixar o arquivo produzido.
-4. Para construir localmente com Node 20/24: `npm install --no-save tfx-cli@0.24.2`, depois `npm run check` e `npm run package:vsix`.
+4. Para construir localmente com Node.js >=24: `npm install --no-save tfx-cli@0.24.2`, depois `npm run check` e `npm run package:vsix`.
 5. No [Visual Studio Marketplace Publisher Portal](https://marketplace.visualstudio.com/manage/publishers/), crie/abra o publisher; importe o `.vsix`, mantenha privado no primeiro teste e compartilhe com a organização Azure DevOps para validar. Após testar, publique publicamente caso queira.
 
 O manifesto começa com `"public": false` para evitar publicação pública prematura. Para atualizações, aumente `vss-extension.json.version` e o patch/minor/major dos `task.json`; não reutilize versões da extensão já publicadas.
@@ -166,7 +166,7 @@ O manifesto começa com `"public": false` para evitar publicação pública prem
 - **401 no ACR:** autentique com `Docker@2 login` ou `az acr login` e confira permissão `AcrPull`.
 - **Banco Trivy indisponível:** permita acesso aos registries de dados ou configure `dbRepository`; somente habilite `skipDbUpdate` com cache preparado.
 - **Windows: `tar` não disponível:** o Installer usa `Expand-Archive` no Windows, portanto não requer `tar`.
-- **Agente antigo:** atualize para >= 4.248.0 para o executor Node20_1; Node24 é usado quando disponível.
+- **Agente antigo:** atualize para **>= 4.265.1**. A extensão não oferece fallback de execução: as duas tasks usam apenas `Node24`.
 
 ## Referências
 

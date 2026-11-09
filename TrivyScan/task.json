@@ -5,16 +5,13 @@
     "Build",
     "Release"
   ],
-  "minimumAgentVersion": "4.248.0",
+  "minimumAgentVersion": "4.265.1",
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 0
+    "Patch": 1
   },
   "execution": {
-    "Node20_1": {
-      "target": "index.js"
-    },
     "Node24": {
       "target": "index.js"
     }

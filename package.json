@@ -1,6 +1,6 @@
 {
   "name": "azure-pipelines-tasks-trivy",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Azure DevOps tasks to install and scan with Aqua Trivy",
   "license": "MIT",
@@ -14,6 +14,6 @@
     "tfx-cli": "0.24.2"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }

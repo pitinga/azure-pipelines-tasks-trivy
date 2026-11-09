@@ -32,4 +32,14 @@ for (const [assetType, filename] of required) {
 }
 const version = JSON.parse(fs.readFileSync(path.join(root, 'vss-extension.json'), 'utf8')).version;
 if (!xml.includes('Version="' + version + '"')) throw new Error('VSIX version mismatch: ' + version);
+for (const name of ['TrivyInstaller','TrivyScan']) {
+  const json = JSON.parse(execFileSync('unzip',['-p',vsix,name + '/task.json'],{encoding:'utf8'}));
+  if (Object.keys(json.execution).length !== 1 || !json.execution.Node24) {
+    throw new Error('Expected Node24-only executor for ' + name);
+  }
+  if (json.minimumAgentVersion !== '4.265.1') {
+    throw new Error('Node24 minimumAgentVersion missing for ' + name);
+  }
+  console.log('OK: Node24 only in ' + name);
+}
 console.log('Marketplace assets verified in ' + vsixFiles[0]);

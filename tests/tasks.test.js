@@ -14,7 +14,10 @@ test('task manifests and Node handlers valid', () => {
   const b = JSON.parse(fs.readFileSync(path.join(root, 'TrivyScan/task.json')));
   const ext = JSON.parse(fs.readFileSync(path.join(root, 'vss-extension.json')));
   assert.equal(a.execution.Node24.target, 'index.js');
-  assert.equal(b.execution.Node20_1.target, 'index.js');
+  assert.deepEqual(Object.keys(a.execution), ['Node24']);
+  assert.deepEqual(Object.keys(b.execution), ['Node24']);
+  assert.equal(a.minimumAgentVersion, '4.265.1');
+  assert.equal(b.minimumAgentVersion, '4.265.1');
   assert.equal(ext.contributions.length, 2);
   assert.notEqual(a.id, b.id);
   assert.equal(a.inputs[0].defaultValue, 'latest');
@@ -54,4 +57,15 @@ test('flags / exitCode validation and escapes', () => {
   assert.equal(escapeVso('abc;]'), 'abc%3B%5D');
   const vals = {command:'fs',target:'.',exitCode:'abc'};
   assert.throws(() => buildArgs((name, fallback='') => vals[name] ?? fallback, () => false));
+});
+ 
+test('GitHub Actions exclusivamente Node 24', () => {
+  const workflow = fs.readFileSync(path.join(root,'.github/workflows/validate-and-package.yml'),'utf8');
+  assert.match(workflow,/actions\/checkout@v7/);
+  assert.match(workflow,/actions\/setup-node@v7/);
+  assert.match(workflow,/actions\/upload-artifact@v7/);
+  assert.match(workflow,/node-version: '24'/);
+  assert.ok(Number(process.versions.node.split('.')[0]) >= 24, 'runtime Node >=24');
+  assert.equal(require('../package.json').engines.node, '>=24');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'vss-extension.json'))).version,'0.1.2');
 });
