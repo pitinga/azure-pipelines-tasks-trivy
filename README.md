@@ -178,3 +178,7 @@ O manifesto começa com `"public": false` para evitar publicação pública prem
 ## Licença
 
 MIT. Este projeto é uma implementação nova, não uma redistribuição do código do projeto Flyway.
+
+## Licenciamento e integridade do VSIX
+
+Na versão de teste **0.1.3**, o arquivo `LICENSE` MIT é incluído explicitamente no pacote e conferido byte a byte após o empacotamento. As tasks e seus identificadores não foram alterados. A extensão permanece **privada**, sem publicação de nova versão no Marketplace enquanto a homologação funcional continua.

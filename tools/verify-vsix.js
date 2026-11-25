@@ -22,6 +22,7 @@ for (const [assetType, filename] of required) {
   }
   const bytes = execFileSync('unzip', ['-p', vsix, filename], { maxBuffer: 10 * 1024 * 1024 });
   if (bytes.length < 100) throw new Error('Missing or empty file ' + filename);
+  if (filename === 'LICENSE' && !bytes.equals(fs.readFileSync(path.join(root,'LICENSE')))) throw new Error('LICENSE dentro do VSIX divergente do repositorio');
   if (filename.endsWith('.png') && (bytes.readUInt32BE(16) !== 128 || bytes.readUInt32BE(20) !== 128)) {
     throw new Error('Marketplace icon must be 128x128 pixels');
   }
