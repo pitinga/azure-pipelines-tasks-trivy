@@ -67,7 +67,7 @@ test('GitHub Actions exclusivamente Node 24', () => {
   assert.match(workflow,/node-version: '24'/);
   assert.ok(Number(process.versions.node.split('.')[0]) >= 24, 'runtime Node >=24');
   assert.equal(require('../package.json').engines.node, '>=24');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'vss-extension.json'))).version,'0.1.2');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'vss-extension.json'))).version,'0.1.3');
 });
 
 
