@@ -67,13 +67,13 @@ test('GitHub Actions exclusivamente Node 24', () => {
   assert.match(workflow,/node-version: '24'/);
   assert.ok(Number(process.versions.node.split('.')[0]) >= 24, 'runtime Node >=24');
   assert.equal(require('../package.json').engines.node, '>=24');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'vss-extension.json'))).version,'0.1.4');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'vss-extension.json'))).version,'0.1.5');
 });
 
 
 test('MIT license explicitly packaged and verified without changing task handlers',()=>{
  const manifest=require('../vss-extension.json');
- assert.equal(manifest.version,'0.1.4');
+ assert.equal(manifest.version,'0.1.5');
  assert.equal(require('../package.json').version,manifest.version);
  assert.equal(manifest.content.license.path,'LICENSE');
  assert.ok(manifest.files.some(f=>f.path==='LICENSE'&&f.addressable===true));
@@ -93,4 +93,14 @@ test('Public 0.x.y release preserves 0.1 and task Major @0',()=>{
   const task=require('../'+c.properties.name+'/task.json');
   assert.equal(task.version.Major,0);
  }
+});
+
+
+test('Marketplace public identity and product title',()=>{
+ const manifest=require('../vss-extension.json');
+ assert.equal(manifest.publisher,'pitinga');
+ assert.equal(manifest.id,'azure-pipelines-tasks-trivy');
+ assert.equal(manifest.name,'Trivy - Installer & Scanner');
+ assert.equal(manifest.version,'0.1.5');
+ assert.equal(manifest.public,true);
 });

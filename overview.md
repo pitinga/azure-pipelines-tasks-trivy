@@ -1,4 +1,4 @@
-# Trivy Installer & Scanner for Azure Pipelines
+# Trivy - Installer & Scanner for Azure Pipelines
 
 Execute o **Trivy** em pipelines Azure DevOps utilizando duas tasks independentes: uma instala e verifica o binário oficial; a outra executa análises de segurança e gera relatórios. A instalação da extensão não requer scripts manuais.
 

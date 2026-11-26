@@ -1,8 +1,8 @@
 {
   "manifestVersion": 1,
   "id": "azure-pipelines-tasks-trivy",
-  "name": "Trivy Installer & Scanner",
-  "version": "0.1.4",
+  "name": "Trivy - Installer & Scanner",
+  "version": "0.1.5",
   "publisher": "pitinga",
   "description": "Install Trivy and scan container images, filesystems, repositories, IaC and Kubernetes in Azure Pipelines.",
   "public": true,

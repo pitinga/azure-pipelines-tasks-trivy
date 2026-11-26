@@ -99,7 +99,7 @@ jobs:
             echo "Release $tag already exists at this commit; not replacing immutable release assets."
           else
             gh release create "$tag" "$pkg" --repo "$GITHUB_REPOSITORY" --target "$sha" \
-              --title "Trivy Installer & Scanner $version" \
+              --title "Trivy - Installer & Scanner $version" \
               --notes "Public 0.x.y preview release for Azure Pipelines. Task identifiers remain @0. Download the VSIX here. Marketplace listing may require separate publisher validation. Source and MIT license: this repository."
           fi
       - name: Submit public VSIX to Visual Studio Marketplace (only when credential configured)
