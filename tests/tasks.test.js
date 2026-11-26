@@ -104,3 +104,20 @@ test('Marketplace public identity and product title',()=>{
  assert.equal(manifest.version,'0.1.5');
  assert.equal(manifest.public,true);
 });
+
+test('CI-approved GitHub Release is independent of Marketplace and never mutates published assets',()=>{
+ const workflow=fs.readFileSync(path.join(root,'.github/workflows/github-release.yml'),'utf8');
+ const release=fs.readFileSync(path.join(root,'.github/scripts/github-release.sh'),'utf8');
+ const marketplace=fs.readFileSync(path.join(root,'.github/workflows/publish-public.yml'),'utf8');
+ assert.match(workflow,/workflow_run:/);
+ assert.match(workflow,/conclusion == 'success'/);
+ assert.match(workflow,/contents: write/);
+ assert.match(release,/gh run download/);
+ assert.match(release,/gh release create/);
+ assert.match(release,/never move existing tags/);
+ assert.match(release,/LICENSE/);
+ assert.doesNotMatch(release,/extension publish|VS_MARKETPLACE_TOKEN/);
+ assert.doesNotMatch(marketplace,/gh release (create|upload|edit)/);
+ assert.doesNotMatch(marketplace,/^\s+push:/m);
+ assert.match(marketplace,/workflow_dispatch:/);
+});
