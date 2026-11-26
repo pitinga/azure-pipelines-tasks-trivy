@@ -113,6 +113,12 @@ if (process.argv.includes('--self-test')) {
   if(oldPackageText && JSON.parse(oldPackageText).version !== oldManifest.version) fail('Versões divergentes no commit-base.');
   const packageChanged=changes.some(packageSource);
   const extBump=compare(manifest.version,oldManifest.version);
+  const [oldMajor,oldMinor,oldPatch]=components(oldManifest.version);
+  const [newMajor,newMinor,newPatch]=components(manifest.version);
+  if(oldMajor===0){
+    if(newMajor!==0||newMinor!==oldMinor)fail('Enquanto a extensão estiver em 0.X.Y, preserve 0.X e incremente apenas Y.');
+    if(newPatch!==oldPatch && newPatch!==oldPatch+1)fail('Incremento público permitido: somente patch +1.');
+  }
   if(extBump<0) fail('Downgrade da versão da extensão não permitido.');
   if(packageChanged && extBump<=0)
     fail('Arquivos que integram o VSIX mudaram sem atualizar vss-extension.json.version e package.json.version.');

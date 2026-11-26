@@ -1,0 +1,131 @@
+name: Publish public 0.x.y VSIX
+on:
+  push:
+    branches: [main]
+    paths:
+      - vss-extension.json
+      - .github/workflows/publish-public.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: marketplace-public-release
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Confirm public patch-only version and unchanged task Major
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, subprocess, os
+          m=json.load(open('vss-extension.json'))
+          p=json.load(open('package.json'))
+          major,minor,patch=map(int,m['version'].split('.'))
+          assert major==0, 'Public preview releases must use major=0'
+          assert minor==1, 'Only patch Y may increase while 0.1 is active'
+          assert patch>=1
+          assert m['public'] is True, 'Marketplace must be public'
+          assert p['version']==m['version'], 'Package version mismatch'
+          assert m['publisher']=='pitinga', 'Unexpected publisher'
+          names=[x['properties']['name'] for x in m['contributions'] if x['type']=='ms.vss-distributed-task.task']
+          for name in names:
+              spec=json.load(open(name+'/task.json'))
+              assert spec['version']['Major']==0, 'Task @0 must be preserved'
+              assert list(spec['execution'])==['Node24']
+          print('Public preview version:',m['version'],'tasks:',names)
+          PY
+      - name: Validate task-version governance
+        shell: bash
+        env:
+          VERSION_BASE_SHA: ${{ github.event.before }}
+        run: |
+          node tools/check-task-versions.cjs --self-test
+          node tools/check-task-versions.cjs
+      - name: Run tests
+        run: npm run check
+      - name: Build VSIX using official TFX CLI
+        run: |
+          npm install --no-save tfx-cli@0.24.2
+          mkdir -p dist
+          npm run package:vsix
+          npm run verify:vsix
+      - name: Check package identity, public flag and license
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import glob, json,zipfile, re
+          m=json.load(open('vss-extension.json'))
+          files=glob.glob('dist/*.vsix')
+          assert len(files)==1, files
+          with zipfile.ZipFile(files[0]) as z:
+              assert z.read('LICENSE')==open('LICENSE','rb').read()
+              xml=z.read('extension.vsixmanifest').decode('utf-8')
+              assert 'Microsoft.VisualStudio.Services.Content.License' in xml
+              assert 'Version="'+m['version']+'"' in xml
+              assert re.search(r'\bPublic\b', xml, re.I) or m['public'] is True
+          print('Public VSIX verified:', files[0])
+          PY
+      - name: Publish public GitHub Release (stable, despite version 0.x)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./vss-extension.json').version")
+          tag="v$version"
+          pkg=$(find dist -maxdepth 1 -type f -name '*.vsix' -print -quit)
+          test -n "$pkg"
+          sha=$(git rev-parse HEAD)
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            existing=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha')
+            if [[ "$existing" != "$sha" ]]; then
+              echo "::error::Existing release tag $tag points to another commit ($existing)."
+              exit 1
+            fi
+            echo "Release $tag already exists at this commit; not replacing immutable release assets."
+          else
+            gh release create "$tag" "$pkg" --repo "$GITHUB_REPOSITORY" --target "$sha" \
+              --title "Trivy Installer & Scanner $version" \
+              --notes "Public 0.x.y preview release for Azure Pipelines. Task identifiers remain @0. Download the VSIX here. Marketplace listing may require separate publisher validation. Source and MIT license: this repository."
+          fi
+      - name: Submit public VSIX to Visual Studio Marketplace (only when credential configured)
+        shell: bash
+        env:
+          VS_MARKETPLACE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$VS_MARKETPLACE_TOKEN" ]]; then
+            echo "::warning::GitHub Release is public; Marketplace upload not performed. Configure VS_MARKETPLACE_TOKEN (Marketplace publish scope) or upload the VSIX in the publisher portal."
+            exit 0
+          fi
+          pkg=$(find dist -maxdepth 1 -type f -name '*.vsix' -print -quit)
+          test -n "$pkg"
+          npx --yes tfx-cli@0.24.2 extension publish \
+            --publisher pitinga \
+            --vsix "$pkg" \
+            --auth-type pat \
+            --token "$VS_MARKETPLACE_TOKEN" \
+            --no-prompt
+          echo "Marketplace submission completed; check final public status after marketplace security validation."
+      - name: Upload VSIX as Actions artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: public-preview-vsix
+          path: dist/*.vsix
+          if-no-files-found: warn
+          retention-days: 90

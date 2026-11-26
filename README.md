@@ -155,7 +155,7 @@ vss-extension.json    # manifesto Marketplace
 4. Para construir localmente com Node.js >=24: `npm install --no-save tfx-cli@0.24.2`, depois `npm run check` e `npm run package:vsix`.
 5. No [Visual Studio Marketplace Publisher Portal](https://marketplace.visualstudio.com/manage/publishers/), crie/abra o publisher; importe o `.vsix`, mantenha privado no primeiro teste e compartilhe com a organização Azure DevOps para validar. Após testar, publique publicamente caso queira.
 
-O manifesto começa com `"public": false` para evitar publicação pública prematura. Para atualizações, aumente `vss-extension.json.version` e o patch/minor/major dos `task.json`; não reutilize versões da extensão já publicadas.
+A partir da versão **0.1.4**, o manifesto possui `"public": true`. O versionamento público segue `0.1.Y`, incrementando somente Y. Os identificadores `TrivyInstaller@0` e `TrivyScan@0` permanecem iguais. A publicação no Marketplace depende de envio/validação pelo publisher; o pacote público também fica no GitHub Release.
 
 **Importante:** o pacote VSIX ainda precisa passar por integração com um agente Azure Pipelines e testes com downloads reais do Trivy; os testes incluídos validam estrutura, parâmetros e funções puras. O arquivo `.vsix` é criado automaticamente pelo GitHub Actions assim que os arquivos forem enviados ao repositório. Aqui não há dependência npm embutida nas tasks.
 
@@ -181,4 +181,8 @@ MIT. Este projeto é uma implementação nova, não uma redistribuição do cód
 
 ## Licenciamento e integridade do VSIX
 
-Na versão de teste **0.1.3**, o arquivo `LICENSE` MIT é incluído explicitamente no pacote e conferido byte a byte após o empacotamento. As tasks e seus identificadores não foram alterados. A extensão permanece **privada**, sem publicação de nova versão no Marketplace enquanto a homologação funcional continua.
+Na versão de teste **0.1.3**, o arquivo `LICENSE` MIT é incluído explicitamente no pacote e conferido byte a byte após o empacotamento. As tasks e seus identificadores não foram alterados. A extensão foi preparada para visibilidade **pública** a partir da versão `0.1.4`.
+
+## Releases públicas 0.1.Y
+
+As versões públicas seguem **`0.1.Y`**; somente o patch `Y` aumenta a cada release. O `@0` das tasks é a versão Major declarada em cada `task.json` e não muda quando o VSIX recebe outra versão. A GitHub Action `publish-public.yml` executa testes, gera um VSIX, publica um GitHub Release público e submete o pacote ao Marketplace somente quando `VS_MARKETPLACE_TOKEN` estiver configurado no repositório. Sem esse segredo, o VSIX público pode ser enviado manualmente pelo publisher no [Marketplace](https://marketplace.visualstudio.com/manage). O GitHub Release público não significa, por si só, que a listagem do Marketplace já esteja pública.

@@ -67,13 +67,13 @@ test('GitHub Actions exclusivamente Node 24', () => {
   assert.match(workflow,/node-version: '24'/);
   assert.ok(Number(process.versions.node.split('.')[0]) >= 24, 'runtime Node >=24');
   assert.equal(require('../package.json').engines.node, '>=24');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'vss-extension.json'))).version,'0.1.3');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'vss-extension.json'))).version,'0.1.4');
 });
 
 
 test('MIT license explicitly packaged and verified without changing task handlers',()=>{
  const manifest=require('../vss-extension.json');
- assert.equal(manifest.version,'0.1.3');
+ assert.equal(manifest.version,'0.1.4');
  assert.equal(require('../package.json').version,manifest.version);
  assert.equal(manifest.content.license.path,'LICENSE');
  assert.ok(manifest.files.some(f=>f.path==='LICENSE'&&f.addressable===true));
@@ -81,4 +81,16 @@ test('MIT license explicitly packaged and verified without changing task handler
  assert.match(license,/MIT License/);
  const verify=fs.readFileSync(path.join(root,'tools/verify-vsix.js'),'utf8');
  assert.match(verify,/bytes.equals\(fs.readFileSync/);
+});
+
+
+test('Public 0.x.y release preserves 0.1 and task Major @0',()=>{
+ const m=require('../vss-extension.json');
+ assert.match(m.version,/^0\.1\.\d+$/);
+ assert.equal(m.public,true);
+ assert.equal(require('../package.json').version,m.version);
+ for(const c of m.contributions.filter(x=>x.type==='ms.vss-distributed-task.task')){
+  const task=require('../'+c.properties.name+'/task.json');
+  assert.equal(task.version.Major,0);
+ }
 });
