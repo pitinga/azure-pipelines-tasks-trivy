@@ -185,8 +185,12 @@ Na versão de teste **0.1.3**, o arquivo `LICENSE` MIT é incluído explicitamen
 
 ## Releases públicas 0.1.Y
 
-As versões públicas seguem **`0.1.Y`**; somente o patch `Y` aumenta a cada release. O `@0` das tasks é a versão Major declarada em cada `task.json` e não muda quando o VSIX recebe outra versão. A GitHub Action `publish-public.yml` executa testes, gera um VSIX, publica um GitHub Release público e submete o pacote ao Marketplace somente quando `VS_MARKETPLACE_TOKEN` estiver configurado no repositório. Sem esse segredo, o VSIX público pode ser enviado manualmente pelo publisher no [Marketplace](https://marketplace.visualstudio.com/manage). O GitHub Release público não significa, por si só, que a listagem do Marketplace já esteja pública.
+As versões públicas seguem **`0.1.Y`**; somente o patch `Y` aumenta a cada release. O `@0` das tasks é a versão Major declarada em cada `task.json` e não muda quando o VSIX recebe outra versão. A GitHub Action `github-release.yml` publica uma GitHub Release independente do Marketplace, depois de CI aprovado. O workflow `publish-public.yml` permanece manual para o Marketplace, sem alterar tags ou releases. Sem esse segredo, o VSIX público pode ser enviado manualmente pelo publisher no [Marketplace](https://marketplace.visualstudio.com/manage). O GitHub Release público não significa, por si só, que a listagem do Marketplace já esteja pública.
 
 ### Nome comercial atualizado
 
 A partir da versão pública **0.1.5**, a extensão usa o nome **Trivy - Installer & Scanner**. Os IDs, GUIDs e referências YAML das tasks não mudaram. O título antigo permanece somente no histórico de versões.
+
+## GitHub Releases padronizadas
+
+O workflow `.github/workflows/github-release.yml` e independente do Marketplace: exige CI aprovado na `main`, verifica o SHA, a identidade e a licenca do VSIX, cria tag `vX.Y.Z` imutavel e GitHub Release publica (nao draft nem pre-release) com VSIX. Reexecucoes preservam releases antigas. Marketplace e separado e manual.

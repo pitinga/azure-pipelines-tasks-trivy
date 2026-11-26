@@ -1,15 +1,10 @@
-name: Publish public 0.x.y VSIX
+name: Publish to Marketplace (manual)
 on:
-  push:
-    branches: [main]
-    paths:
-      - vss-extension.json
-      - .github/workflows/publish-public.yml
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 concurrency:
-  group: marketplace-public-release
+  group: marketplace-manual
   cancel-in-progress: false
 jobs:
   release:
@@ -79,29 +74,6 @@ jobs:
               assert re.search(r'\bPublic\b', xml, re.I) or m['public'] is True
           print('Public VSIX verified:', files[0])
           PY
-      - name: Publish public GitHub Release (stable, despite version 0.x)
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          version=$(node -p "require('./vss-extension.json').version")
-          tag="v$version"
-          pkg=$(find dist -maxdepth 1 -type f -name '*.vsix' -print -quit)
-          test -n "$pkg"
-          sha=$(git rev-parse HEAD)
-          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            existing=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha')
-            if [[ "$existing" != "$sha" ]]; then
-              echo "::error::Existing release tag $tag points to another commit ($existing)."
-              exit 1
-            fi
-            echo "Release $tag already exists at this commit; not replacing immutable release assets."
-          else
-            gh release create "$tag" "$pkg" --repo "$GITHUB_REPOSITORY" --target "$sha" \
-              --title "Trivy - Installer & Scanner $version" \
-              --notes "Public 0.x.y preview release for Azure Pipelines. Task identifiers remain @0. Download the VSIX here. Marketplace listing may require separate publisher validation. Source and MIT license: this repository."
-          fi
       - name: Submit public VSIX to Visual Studio Marketplace (only when credential configured)
         shell: bash
         env:
